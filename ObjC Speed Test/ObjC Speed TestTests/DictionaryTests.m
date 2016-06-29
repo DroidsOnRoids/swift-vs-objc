@@ -25,7 +25,7 @@
 - (NSMutableDictionary *)dictionaryWithElements {
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
     for (NSInteger i = 0; i < self.repeatCount; i++) {
-        dictionary[[NSString stringWithFormat:@"%li", (long)i]] = [NSString stringWithFormat:@"%i", arc4random_uniform(1000)];
+        dictionary[@(i)] = @(i);
     }
     
     return dictionary;
@@ -47,28 +47,26 @@
 
     [self measureBlock:^{
         for (NSInteger i = 0; i < self.repeatCount; i++) {
-            string = self.dictionary[[NSString stringWithFormat:@"%li", (long)i]];
+            string = self.dictionary[@(i)];
         }
     }];
 }
 
 - (void)testRemove {
-#warning It contains time for refilling the dictionary, so should subtract avg time testAdd from the result.
     [self measureBlock:^{
         for (NSInteger i = 0; i < self.repeatCount; i++) {
-            [self.dictionary removeObjectForKey:[NSString stringWithFormat:@"%li", (long)i]];
+            [self.dictionary removeObjectForKey:@(i)];
         }
-        self.dictionary = [self dictionaryWithElements];
     }];
 }
 
 - (void)testFastEnum {
-    __block NSString *string;
+    __block NSNumber *number;
     
     [self measureBlock:^{
-        for (NSString *key in self.dictionary) {
-            NSString *value = [self.dictionary valueForKey:key];
-            string = [key stringByAppendingString:value];
+        for (NSNumber *key in self.dictionary) {
+            NSNumber *value = self.dictionary[key];
+            number = value;
         }
     }];
 }

@@ -11,22 +11,22 @@ import XCTest
 class DictionaryTests: XCTestCase {
     
     let repeatCount = 1_000_000
-    var dictionary = [String: String]()
+    var dictionary = [Int: Int]()
     
-    func dictionaryWithElements() -> [String: String] {
-        var dictionary = [String: String]()
+    func dictionaryWithElements() -> [Int: Int] {
+        var dictionary = [Int: Int]()
         for i in 0..<repeatCount {
-            dictionary["\(i)"] = "\(arc4random_uniform(1000))"
+            dictionary[i] = i
         }
         
         return dictionary
     }
-    
+
     override func setUp() {
         super.setUp()
         dictionary = dictionaryWithElements()
     }
-    
+
     func testAdd() {
         measureBlock { 
             _ = self.dictionaryWithElements()
@@ -34,37 +34,38 @@ class DictionaryTests: XCTestCase {
     }
     
     func testAccess() {
-        var string = String?()
+        var integer: Int?
         
         measureBlock { 
             for i in 0..<self.repeatCount {
-                string = self.dictionary["\(i)"]
+                integer = self.dictionary[i]
             }
         }
         
-        print(string)
+        print(integer)
     }
     
-    // It contains time for refilling the dictionary, so should subtract avg time testAdd from the result.
     func testRemove() {
         measureBlock {
             for i in 0..<self.repeatCount {
-                self.dictionary.removeValueForKey("\(i)")
+                self.dictionary.removeValueForKey(i)
             }
-            self.dictionary = self.dictionaryWithElements()
         }
     }
     
     func testFastEnum() {
-        var string = String()
-        
+        var keyPlaceholder = Int()
+        var valuePlaceholder = Int()
+
         measureBlock { 
             for (key, value) in self.dictionary {
-                string = key + value
+                valuePlaceholder = value
+                keyPlaceholder = key
             }
         }
         
-        print(string)
+        print(valuePlaceholder)
+        print(keyPlaceholder)
     }
     
 }
